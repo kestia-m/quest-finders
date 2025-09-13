@@ -146,4 +146,35 @@ button:focus-visible {
     background-color: var(--background);
     color: var(--foreground);
   }
+
+  /* Ensure dropdowns (e.g., select, menu) are opaque */
+  select,
+  [role="menu"],
+  .dropdown-menu {
+    background-color: var(--card) !important;
+    color: var(--card-foreground) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  /* Specific to shadcn/ui Select or Command components */
+  .select-content,
+  .command {
+    background-color: var(--popover) !important;
+    color: var(--popover-foreground) !important;
+  }
+
+  /* Target DataTableFacetedFilter dropdowns specifically */
+  .faceted-filter-menu {
+    background-color: var(--card) !important;
+    color: var(--card-foreground) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  /* Ensure dark mode consistency */
+  .dark .faceted-filter-menu {
+    background-color: var(--popover) !important;
+    color: var(--popover-foreground) !important;
+  }
 }

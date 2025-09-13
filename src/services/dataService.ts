@@ -21,6 +21,7 @@ export interface Spot {
 export interface Budget {
   id: number;
   userId: string;
+  date: string; // Added date field (e.g., "2025-09-01")
   totalBudget: number;
   currentSpent: number;
   categories: { transport: number; accommodation: number; activities: number; food: number };
@@ -79,8 +80,8 @@ export interface Task {
   id: string;
   title: string;
   status: string;
-  label:string;
-  priority: 'low' | 'medium'|'high';
+  label: string;
+  priority: 'low' | 'medium' | 'high';
   // Add more fields based on tasks.json and taskSchema if needed
 }
 
@@ -107,7 +108,29 @@ let trips: Trip[] = [];
 // Services
 export const dataService = {
   getSpots: (): Spot[] => spotsData as Spot[],
-  getBudgets: (userId: string): Budget[] => (budgetsData as BudgetsData).sampleBudgets.filter(b => b.userId === userId),
+  getBudgets: (userId: string, range?: string): Budget[] => {
+    const budgets = (budgetsData as BudgetsData).sampleBudgets.filter(b => b.userId === userId);
+    if (!range) return budgets;
+
+    const today = new Date('2025-09-13');
+    return budgets.filter(budget => {
+      const budgetDate = new Date(budget.date); // Use the date field from Budget
+      const diffInMs = today.getTime() - budgetDate.getTime();
+      const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+      switch (range) {
+        case '30days':
+          return diffInDays <= 30;
+        case '60days':
+          return diffInDays <= 60;
+        case '90days':
+          return diffInDays <= 90;
+        case '1year':
+          return diffInDays <= 365;
+        default:
+          return true;
+      }
+    });
+  },
   getQuests: (): Quest[] => questsData as Quest[],
   updateQuest: (questId: number, completed: boolean): void => {
     const quest = (questsData as Quest[]).find(q => q.id === questId);
@@ -140,4 +163,5 @@ export const dataService = {
     console.log(`Saved trip: ${trip.name} with ${trip.spots.length} spots`);
   },
   getTasks: (): Task[] => tasksData as Task[], // New method to get tasks
+  getAllBudgets: (): Budget[] => (budgetsData as BudgetsData).sampleBudgets
 };

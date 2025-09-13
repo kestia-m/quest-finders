@@ -3,6 +3,7 @@
     {
       "id": 1,
       "userId": "user1",
+      "date": "2025-09-13",
       "totalBudget": 20000,
       "currentSpent": 5000,
       "categories": {
@@ -16,7 +17,38 @@
     },
     {
       "id": 2,
+      "userId": "user1",
+      "date": "2025-09-01",
+      "totalBudget": 20000,
+      "currentSpent": 4500,
+      "categories": {
+        "transport": 2500,
+        "accommodation": 7500,
+        "activities": 4500,
+        "food": 1000
+      },
+      "resourceMeter": 77.5,
+      "alerts": []
+    },
+    {
+      "id": 3,
+      "userId": "user1",
+      "date": "2025-08-15",
+      "totalBudget": 20000,
+      "currentSpent": 4000,
+      "categories": {
+        "transport": 2000,
+        "accommodation": 7000,
+        "activities": 4000,
+        "food": 3000
+      },
+      "resourceMeter": 80,
+      "alerts": []
+    },
+    {
+      "id": 4,
       "userId": "user2",
+      "date": "2025-09-10",
       "totalBudget": 15000,
       "currentSpent": 12000,
       "categories": {
@@ -27,10 +59,85 @@
       },
       "resourceMeter": 20,
       "alerts": ["Low budget - play mini-game for discounts!"]
+    },
+    {
+      "id": 5,
+      "userId": "user2",
+      "date": "2025-09-05",
+      "totalBudget": 15000,
+      "currentSpent": 10000,
+      "categories": {
+        "transport": 3500,
+        "accommodation": 4500,
+        "activities": 1500,
+        "food": 1500
+      },
+      "resourceMeter": 33.33,
+      "alerts": []
+    },
+    {
+      "id": 6,
+      "userId": "user2",
+      "date": "2025-08-25",
+      "totalBudget": 15000,
+      "currentSpent": 8000,
+      "categories": {
+        "transport": 3000,
+        "accommodation": 4000,
+        "activities": 1000,
+        "food": 1000
+      },
+      "resourceMeter": 46.67,
+      "alerts": []
+    },
+    {
+      "id": 7,
+      "userId": "user3",
+      "date": "2025-09-12",
+      "totalBudget": 25000,
+      "currentSpent": 18000,
+      "categories": {
+        "transport": 5000,
+        "accommodation": 10000,
+        "activities": 4000,
+        "food": 3000
+      },
+      "resourceMeter": 28,
+      "alerts": ["High spending on accommodation!"]
+    },
+    {
+      "id": 8,
+      "userId": "user3",
+      "date": "2025-09-01",
+      "totalBudget": 25000,
+      "currentSpent": 15000,
+      "categories": {
+        "transport": 4000,
+        "accommodation": 8000,
+        "activities": 3500,
+        "food": 2500
+      },
+      "resourceMeter": 40,
+      "alerts": []
+    },
+    {
+      "id": 9,
+      "userId": "user3",
+      "date": "2025-08-20",
+      "totalBudget": 25000,
+      "currentSpent": 12000,
+      "categories": {
+        "transport": 3500,
+        "accommodation": 6000,
+        "activities": 3000,
+        "food": 2000
+      },
+      "resourceMeter": 52,
+      "alerts": ["Mini-game discount applied!"]
     }
   ],
   "costs": {
-    "discounts": [10, 20, 5],
+    "discounts": [10, 20, 5, 15, 25],
     "currency": "ZAR"
   }
 }
