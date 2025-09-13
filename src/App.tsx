@@ -11,7 +11,7 @@ import { ItineraryPlanner } from '@/components/itinerary/ItineraryPlanner';
 import { Leaderboard } from '@/components/gamification/Leaderboard';
 import { TravelTales } from '@/components/social/Traveltales';
 import {TaskPage} from '@/components/tasks/tasklist';
-import Dashboardk from '@/components/dashboard/Dashboard';
+import Dashboardk from '@/components/dashboard/dashboard';
 
 function App() {
   const [user, setUser] = useState<User | null>(null);
