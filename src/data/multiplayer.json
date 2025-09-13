@@ -1,0 +1,19 @@
+[
+  {
+    "id": 1,
+    "groupName": "SA Adventure Squad",
+    "members": ["user1", "user2"],
+    "sharedItinerary": [1, 3],
+    "questId": 1,
+    "xpShared": 200,
+    "tales": [
+      {
+        "id": 1,
+        "userId": "user1",
+        "content": "Loved the Garden Route! #SATravel",
+        "upvotes": 5,
+        "xpBonus": 25
+      }
+    ]
+  }
+]

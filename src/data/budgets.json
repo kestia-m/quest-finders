@@ -1,0 +1,36 @@
+{
+  "sampleBudgets": [
+    {
+      "id": 1,
+      "userId": "user1",
+      "totalBudget": 20000,
+      "currentSpent": 5000,
+      "categories": {
+        "transport": 3000,
+        "accommodation": 8000,
+        "activities": 5000,
+        "food": 4000
+      },
+      "resourceMeter": 75,
+      "alerts": ["Over budget on transport!"]
+    },
+    {
+      "id": 2,
+      "userId": "user2",
+      "totalBudget": 15000,
+      "currentSpent": 12000,
+      "categories": {
+        "transport": 4000,
+        "accommodation": 5000,
+        "activities": 2000,
+        "food": 2000
+      },
+      "resourceMeter": 20,
+      "alerts": ["Low budget - play mini-game for discounts!"]
+    }
+  ],
+  "costs": {
+    "discounts": [10, 20, 5],
+    "currency": "ZAR"
+  }
+}

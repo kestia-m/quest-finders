@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "name": "Kruger National Park",
+    "category": "Wildlife",
+    "description": "Iconic safari spot with Big Five animals. Influencer-endorsed by SA bloggers.",
+    "location": { "lat": -24.0, "lng": 31.5 },
+    "cost": { "entry": 500, "transport": 2000, "accommodation": 1500 },
+    "reviews": [{ "user": "Traveler1", "rating": 5, "comment": "Amazing wildlife!" }],
+    "image": "kruger.jpg"
+  },
+  {
+    "id": 2,
+    "name": "Addo Elephant Park",
+    "category": "Wildlife",
+    "description": "Budget-friendly self-drive safari near Port Elizabeth.",
+    "location": { "lat": -33.5, "lng": 25.7 },
+    "cost": { "entry": 300, "transport": 800, "accommodation": 800 },
+    "reviews": [{ "user": "BudgetTraveler", "rating": 4, "comment": "Great value!" }],
+    "image": "addo.jpg"
+  },
+  {
+    "id": 3,
+    "name": "Garden Route (Tsitsikamma)",
+    "category": "Adventure",
+    "description": "Hiking, beaches, and bungee jumping along the coast.",
+    "location": { "lat": -34.0, "lng": 23.5 },
+    "cost": { "entry": 0, "transport": 1200, "accommodation": 1000 },
+    "reviews": [{ "user": "Adventurer", "rating": 5, "comment": "Epic views!" }],
+    "image": "garden-route.jpg"
+  },
+  {
+    "id": 4,
+    "name": "Cape Town Table Mountain",
+    "category": "Landmark",
+    "description": "Cable car ride with panoramic views.",
+    "location": { "lat": -33.96, "lng": 18.42 },
+    "cost": { "entry": 400, "transport": 500, "accommodation": 1200 },
+    "reviews": [{ "user": "Sightseer", "rating": 4.5, "comment": "Must-see!" }],
+    "image": "table-mountain.jpg"
+  }
+]

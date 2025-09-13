@@ -1,0 +1,10 @@
+{
+  "global": [
+    { "userId": "user1", "username": "ExplorerJane", "xp": 500, "rank": 1, "badges": ["Vibe Voyager"] },
+    { "userId": "user2", "username": "SafariSam", "xp": 400, "rank": 2, "badges": ["Safari Master"] },
+    { "userId": "user3", "username": "BudgetBob", "xp": 300, "rank": 3, "badges": ["Thrifty Traveler"] }
+  ],
+  "friends": [
+    { "userId": "user1", "username": "Friend1", "xp": 450, "rank": 1 }
+  ]
+}

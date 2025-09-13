@@ -1,0 +1,35 @@
+[
+  {
+    "id": 1,
+    "name": "Festival Fever",
+    "description": "Visit 3 concert or event spots in SA.",
+    "category": "Events",
+    "xpReward": 100,
+    "badge": "Vibe Voyager",
+    "requirements": ["spot1", "spot2", "spot3"],
+    "completed": false,
+    "multiplayer": true
+  },
+  {
+    "id": 2,
+    "name": "Bushveld Explorer",
+    "description": "Complete a wildlife safari quest.",
+    "category": "Wildlife",
+    "xpReward": 150,
+    "badge": "Safari Master",
+    "requirements": ["Kruger National Park"],
+    "completed": false,
+    "multiplayer": false
+  },
+  {
+    "id": 3,
+    "name": "Budget Boss",
+    "description": "Stay under budget on a 7-day itinerary.",
+    "category": "Budget",
+    "xpReward": 50,
+    "badge": "Thrifty Traveler",
+    "requirements": ["itinerary1"],
+    "completed": false,
+    "multiplayer": true
+  }
+]

@@ -1,0 +1,18 @@
+{
+  "1": [
+    { "name": "Big Five Safari", "estimatedCost": 1000 },
+    { "name": "Guided Night Drive", "estimatedCost": 600 }
+  ],
+  "2": [
+    { "name": "Self-Drive Safari", "estimatedCost": 400 },
+    { "name": "Elephant Feeding Experience", "estimatedCost": 300 }
+  ],
+  "3": [
+    { "name": "Bungee Jumping", "estimatedCost": 800 },
+    { "name": "Coastal Hiking", "estimatedCost": 200 }
+  ],
+  "4": [
+    { "name": "Cable Car Ride", "estimatedCost": 400 },
+    { "name": "Sunset Hike", "estimatedCost": 150 }
+  ]
+}
