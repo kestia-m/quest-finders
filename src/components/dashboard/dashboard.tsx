@@ -1,9 +1,8 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Select,
   SelectContent,
@@ -15,48 +14,34 @@ import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Legend } from "recharts";
 import {
-  Search,
-  BarChart3,
-  Target,
-  Trophy,
-  Wallet,
-  Users as UsersIcon,
-  MapPin,
-  Diamond,
-  FileText,
-  Settings,
-  ChevronDown,
-  MoreHorizontal,
   Download,
   Trash2,
   Plus,
   ChevronLeft,
   ChevronRight,
   Info,
-  Menu,
+  Check,
 } from "lucide-react";
 import { dataService } from "@/services/dataService";
 import { useEffect, useState } from "react";
-
+import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
+import ResourceMeter, { SetBudgetFlow } from "@/components/budget/ResourceMeter";
+import type { User } from "@/types";
 import {
   type Budget,
   type Quest,
   type LeaderboardEntry,
   type MultiplayerGroup,
 } from "@/services/dataService";
+import { Link } from "react-router-dom";
+import { Sidebar, MobileSidebar } from "@/components/ui/Sidebar";
 
-const currentUserId = "user1";
-
-const sidebarItems = [
-  { icon: BarChart3, label: "Dashboard", active: true },
-  { icon: Target, label: "Quests", active: false, hasSubmenu: true },
-  { icon: Trophy, label: "Leaderboards", active: false },
-  { icon: Wallet, label: "Budget", active: false },
-  { icon: UsersIcon, label: "Multiplayer", active: false },
-  { icon: MapPin, label: "Spots", active: false },
-  { icon: Diamond, label: "Activities", active: false },
-  { icon: FileText, label: "Tasks", active: false },
-  { icon: Settings, label: "Settings", active: false },
+const questSteps = [
+  { id: 1, title: "Quest Category", description: "Select the quest category" },
+  { id: 2, title: "Quest Details", description: "Enter quest details" },
+  { id: 3, title: "Rewards", description: "Set quest rewards" },
+  { id: 4, title: "Confirmation", description: "Review and create quest" },
 ];
 
 function getCategoryBadge(category: string) {
@@ -82,95 +67,294 @@ function getQuestStatusBadge(completed: boolean) {
   );
 }
 
-function MobileSidebar() {
-  return (
-    <Sheet>
-      <SheetTrigger asChild>
-        <Button variant="ghost" size="sm" className="md:hidden">
-          <Menu className="h-5 w-5" />
-        </Button>
-      </SheetTrigger>
-      <SheetContent side="left" className="w-64 bg-white p-0 text-gray-900">
-        <SidebarContent />
-      </SheetContent>
-    </Sheet>
-  );
-}
+function NewQuestFlow({ onClose }: { onClose: () => void }) {
+  const [currentStep, setCurrentStep] = useState(1);
+  const [formData, setFormData] = useState({
+    category: "Wildlife",
+    name: "",
+    description: "",
+    xpReward: "0",
+    badge: "",
+    cost: "0",
+  });
 
-function SidebarContent() {
-  return (
-    <>
-      <div className="border-b border-gray-200 p-6">
-        <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-600">
-            <div className="h-4 w-4 rounded-full bg-white"></div>
+  const handleNext = () => {
+    if (currentStep < 4) {
+      setCurrentStep(currentStep + 1);
+    } else if (currentStep === 4) {
+      const newQuest: Quest = {
+        id: Date.now(),
+        name: formData.name,
+        description: formData.description,
+        category: formData.category,
+        completed: false,
+        xpReward: parseInt(formData.xpReward),
+        badge: formData.badge,
+        requirements: [],
+        multiplayer: false,
+        cost: parseInt(formData.cost),
+      };
+      dataService.addQuest(newQuest);
+      onClose();
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const updateFormData = (field: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const renderStepContent = () => {
+    switch (currentStep) {
+      case 1:
+        return (
+          <div className="space-y-6">
+            <CardHeader className="px-0 pt-0">
+              <CardTitle>Choose Quest Category</CardTitle>
+              <CardDescription>
+                Select the category for your new quest.{" "}
+                <Link to="#" className="text-purple-600 hover:underline">
+                  Learn More
+                </Link>
+                .
+              </CardDescription>
+            </CardHeader>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              {["Wildlife", "Adventure", "Landmark", "Events"].map((category) => (
+                <Card
+                  key={category}
+                  className={cn(
+                    "cursor-pointer transition-all",
+                    formData.category === category
+                      ? "bg-muted border-purple-500 ring-2 ring-purple-500"
+                      : "border-gray-200 hover:shadow-md"
+                  )}
+                  onClick={() => updateFormData("category", category)}
+                >
+                  <CardContent className="flex items-start space-x-4 p-6">
+                    <div className="flex-shrink-0">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-100">
+                        {getCategoryBadge(category)}
+                      </div>
+                    </div>
+                    <div>
+                      <h3 className="text-muted-foreground mb-1 font-semibold">{category}</h3>
+                      <p className="text-muted-foreground text-sm">
+                        Create a {category.toLowerCase()} quest
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
-          <span className="text-lg font-semibold text-gray-900">Safari Quest SA</span>
-        </div>
-      </div>
-      <div className="border-b border-gray-200 p-4">
-        <div className="relative">
-          <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
-          <Input
-            placeholder="Search spots or quests"
-            className="border-gray-300 bg-white pl-10 text-gray-900 placeholder:text-gray-400"
-          />
-        </div>
-      </div>
-      <nav className="flex-1 p-4">
-        <ul className="space-y-2">
-          {sidebarItems.map((item, index) => (
-            <li key={index}>
-              <div
-                className={`flex cursor-pointer items-center justify-between rounded-lg p-3 transition-colors ${
-                  item.active
-                    ? "bg-gray-100 text-gray-900"
-                    : "text-gray-500 hover:bg-gray-100 hover:text-gray-900"
-                }`}>
-                <div className="flex items-center gap-3">
-                  <item.icon className="h-5 w-5" />
-                  <span className="font-medium">{item.label}</span>
-                </div>
-                {item.hasSubmenu && <ChevronDown className="h-4 w-4" />}
+        );
+      case 2:
+        return (
+          <div className="space-y-6">
+            <CardHeader className="px-0 pt-0">
+              <CardTitle>Quest Details</CardTitle>
+              <CardDescription>
+                Provide details for your new quest.{" "}
+                <Link to="#" className="text-purple-600 hover:underline">
+                  Learn More
+                </Link>
+                .
+              </CardDescription>
+            </CardHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="name">Quest Name</Label>
+                <Input
+                  id="name"
+                  placeholder="Enter quest name"
+                  className="mt-2"
+                  value={formData.name}
+                  onChange={(e) => updateFormData("name", e.target.value)}
+                />
               </div>
-            </li>
-          ))}
-        </ul>
-      </nav>
-      <div className="border-t border-gray-200 p-4">
-        <div className="flex items-center gap-3">
-          <Avatar className="h-10 w-10">
-            <AvatarImage src="/professional-headshot.png" />
-            <AvatarFallback>US</AvatarFallback>
-          </Avatar>
-          <div className="flex-1">
-            <div className="text-sm font-medium text-gray-900">Explorer Jane</div>
-            <div className="text-xs text-gray-400">user1@example.com</div>
+              <div>
+                <Label htmlFor="description">Description</Label>
+                <Input
+                  id="description"
+                  placeholder="Enter quest description"
+                  className="mt-2"
+                  value={formData.description}
+                  onChange={(e) => updateFormData("description", e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="cost">Quest Cost (ZAR)</Label>
+                <Input
+                  id="cost"
+                  type="number"
+                  placeholder="Enter quest cost"
+                  className="mt-2"
+                  value={formData.cost}
+                  onChange={(e) => updateFormData("cost", e.target.value)}
+                />
+              </div>
+            </div>
           </div>
-          <MoreHorizontal className="h-4 w-4 text-gray-400" />
-        </div>
-      </div>
-    </>
+        );
+      case 3:
+        return (
+          <div className="space-y-6">
+            <CardHeader className="px-0 pt-0">
+              <CardTitle>Rewards</CardTitle>
+              <CardDescription>
+                Set the rewards for completing the quest.{" "}
+                <Link to="#" className="text-purple-600 hover:underline">
+                  Learn More
+                </Link>
+                .
+              </CardDescription>
+            </CardHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="xpReward">XP Reward</Label>
+                <Input
+                  id="xpReward"
+                  type="number"
+                  placeholder="Enter XP reward"
+                  className="mt-2"
+                  value={formData.xpReward}
+                  onChange={(e) => updateFormData("xpReward", e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="badge">Badge Name</Label>
+                <Input
+                  id="badge"
+                  placeholder="Enter badge name"
+                  className="mt-2"
+                  value={formData.badge}
+                  onChange={(e) => updateFormData("badge", e.target.value)}
+                />
+              </div>
+            </div>
+          </div>
+        );
+      case 4:
+        return (
+          <div className="space-y-6">
+            <CardHeader className="px-0 pt-0">
+              <CardTitle>Confirm Quest Creation</CardTitle>
+              <CardDescription>
+                Review your quest details before creating.{" "}
+                <Link to="#" className="text-purple-600 hover:underline">
+                  Learn More
+                </Link>
+                .
+              </CardDescription>
+            </CardHeader>
+            <div className="space-y-4">
+              <div>
+                <p className="text-sm text-gray-500">Category: {formData.category}</p>
+                <p className="text-sm text-gray-500">Name: {formData.name}</p>
+                <p className="text-sm text-gray-500">Description: {formData.description}</p>
+                <p className="text-sm text-gray-500">XP Reward: {formData.xpReward}</p>
+                <p className="text-sm text-gray-500">Badge: {formData.badge}</p>
+                <p className="text-sm text-gray-500">Cost: {formData.cost} ZAR</p>
+              </div>
+            </div>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="flex items-center justify-center p-4">
+      <Card className="w-full max-w-3xl shadow-lg">
+        <CardHeader className="pb-0">
+          <div className="mb-6 flex items-center justify-between">
+            {questSteps.map((step) => (
+              <div key={step.id} className="relative flex flex-1 flex-col items-center">
+                <div
+                  className={cn(
+                    "flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold transition-colors duration-300",
+                    currentStep > step.id
+                      ? "bg-purple-600 text-white"
+                      : currentStep === step.id
+                      ? "bg-purple-500 text-white"
+                      : "bg-gray-200 text-gray-600"
+                  )}
+                >
+                  {currentStep > step.id ? <Check className="h-5 w-5" /> : step.id}
+                </div>
+                <div
+                  className={cn(
+                    "mt-2 text-center text-sm font-medium",
+                    currentStep >= step.id ? "text-gray-800" : "text-gray-500"
+                  )}
+                >
+                  {step.title}
+                </div>
+                {step.id < questSteps.length && (
+                  <div
+                    className={cn(
+                      "absolute top-5 left-[calc(50%+20px)] h-0.5 w-[calc(100%-40px)] -translate-y-1/2 bg-gray-200 transition-colors duration-300",
+                      currentStep > step.id && "bg-purple-400"
+                    )}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+        </CardHeader>
+        <CardContent className="p-6 md:p-8">
+          {renderStepContent()}
+          <div className="mt-8 flex items-center justify-between border-t pt-6">
+            <Button variant="outline" onClick={handlePrevious} disabled={currentStep === 1}>
+              <ChevronLeft className="h-4 w-4" />
+              <span>Previous</span>
+            </Button>
+            <Button onClick={handleNext}>
+              <span>{currentStep === 4 ? "Create Quest" : "Continue"}</span>
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 
-export default function Dashboardk() {
+interface DashboardProps {
+  user: User | null;
+}
+
+export default function Dashboard({ user }: DashboardProps) {
   const [budgets, setBudgets] = useState<Budget[]>([]);
   const [quests, setQuests] = useState<Quest[]>([]);
   const [leaderboards, setLeaderboards] = useState<LeaderboardEntry[]>([]);
   const [multiplayerGroups, setMultiplayerGroups] = useState<MultiplayerGroup[]>([]);
   const [selectedRange, setSelectedRange] = useState("30days");
+  const [isNewQuestOpen, setIsNewQuestOpen] = useState(false);
+  const [isEditBudgetOpen, setIsEditBudgetOpen] = useState(false);
+
+  const userId = user?.id || "user1";
 
   useEffect(() => {
-    setBudgets(dataService.getBudgets(currentUserId, selectedRange));
+    setBudgets(dataService.getBudgets(userId, selectedRange));
     setQuests(dataService.getQuests());
     setLeaderboards(dataService.getLeaderboards("global"));
-    setMultiplayerGroups(dataService.getMultiplayerGroups(currentUserId));
-  }, [selectedRange]);
+    setMultiplayerGroups(dataService.getMultiplayerGroups(userId));
+  }, [selectedRange, userId]);
 
-  const userBudget = budgets[0] || { totalBudget: 0, currentSpent: 0, resourceMeter: 0, categories: { transport: 0, accommodation: 0, activities: 0, food: 0 } };
-  const userLeaderboard = leaderboards.find((entry) => entry.userId === currentUserId) || { xp: 0, rank: 0, badges: [] };
-  const activeQuestsCount = quests.filter((q) => !q.completed).length;
+  const userLeaderboard = leaderboards.find((entry) => entry.userId === userId) || {
+    xp: 0,
+    rank: 0,
+    badges: [],
+  };
+  const completedQuestsCount = quests.filter((q) => q.completed).length;
 
   const getBudgetData = () => {
     const sortedBudgets = [...budgets].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
@@ -212,9 +396,7 @@ export default function Dashboardk() {
 
   return (
     <div className="bg-white flex h-screen">
-      <div className="hidden w-64 flex-col bg-white md:flex">
-        <SidebarContent />
-      </div>
+      <Sidebar currentPath="/dashboard-k" />
       <div className="flex flex-1 flex-col overflow-hidden">
         <header className="border-b p-4 md:p-6">
           <div className="flex items-center justify-between">
@@ -244,7 +426,9 @@ export default function Dashboardk() {
                     <div className="h-2 w-2 rounded-full bg-purple-500"></div>
                     <span className="text-muted-foreground text-sm">Total Budget</span>
                   </div>
-                  <div className="mb-1 text-2xl font-bold text-gray-900 md:text-3xl">{userBudget.totalBudget} ZAR</div>
+                  <div className="mb-1 text-2xl font-bold text-gray-900 md:text-3xl">
+                    {(budgets[0]?.totalBudget || 0)} ZAR
+                  </div>
                   <div className="text-sm text-green-600">+5% from last month</div>
                 </CardContent>
               </Card>
@@ -261,37 +445,38 @@ export default function Dashboardk() {
               <Card>
                 <CardContent className="p-4 md:p-6">
                   <div className="mb-2 flex items-center gap-3">
-                    <div className="h-2 w-2 rounded-full bg-orange-500"></div>
-                    <span className="text-muted-foreground text-sm">Active Quests</span>
+                    <div className="h-2 w-2 rounded-full bg-blue-500"></div>
+                    <span className="text-muted-foreground text-sm">Rewards Earned</span>
                   </div>
-                  <div className="mb-1 text-2xl font-bold text-gray-900 md:text-3xl">{activeQuestsCount}</div>
-                  <div className="text-sm text-green-600">+1 new</div>
+                  <div className="mb-1 text-2xl font-bold text-gray-900 md:text-3xl">
+                    {userLeaderboard.badges?.length || 0}
+                  </div>
+                  <div className="text-sm text-green-600">+{completedQuestsCount} quests completed</div>
                 </CardContent>
               </Card>
             </div>
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-muted-foreground flex items-center gap-2 text-sm font-medium">
-                  Resource Meter
-                  <Info className="h-4 w-4" />
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <div className="mb-2 text-xs text-gray-500">Current Spent: {userBudget.currentSpent} ZAR</div>
-                <div className="bg-muted mb-4 h-2 w-full rounded-full">
-                  <div className="h-2 rounded-full bg-orange-600" style={{ width: `${userBudget.resourceMeter}%` }}></div>
+            <Sheet open={isEditBudgetOpen} onOpenChange={setIsEditBudgetOpen}>
+              <SheetTrigger asChild>
+                <div>
+                  <ResourceMeter
+                    userId={userId}
+                    selectedRange={selectedRange}
+                    onEdit={() => setIsEditBudgetOpen(true)}
+                  />
                 </div>
-                <div className="mb-3 text-xs text-gray-500">SPENT / REMAINING</div>
-                <div className="flex justify-between">
-                  <div>
-                    <div className="text-lg font-semibold">{userBudget.currentSpent} ZAR</div>
-                  </div>
-                  <div>
-                    <div className="text-lg font-semibold">{userBudget.totalBudget - userBudget.currentSpent} ZAR</div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+              </SheetTrigger>
+              <SheetContent className="w-full max-w-3xl p-0">
+                <SetBudgetFlow
+                  userId={userId}
+                  selectedRange={selectedRange}
+                  onClose={() => setIsEditBudgetOpen(false)}
+                  onSave={(newBudget) => {
+                    setBudgets([newBudget, ...budgets]);
+                    setIsEditBudgetOpen(false);
+                  }}
+                />
+              </SheetContent>
+            </Sheet>
           </div>
           <div className="mb-6 grid grid-cols-1 gap-4 md:mb-8 md:gap-6 xl:grid-cols-4">
             <Card className="xl:col-span-3">
@@ -301,7 +486,7 @@ export default function Dashboardk() {
                     Budget Allocation
                     <Info className="h-4 w-4 text-gray-400" />
                   </CardTitle>
-                  <MoreHorizontal className="h-5 w-5 text-gray-400" />
+                  <div className="h-5 w-5 text-gray-400" />
                 </div>
               </CardHeader>
               <CardContent>
@@ -397,12 +582,24 @@ export default function Dashboardk() {
                   <Info className="h-4 w-4 text-gray-400" />
                 </CardTitle>
                 <div className="flex items-center gap-2">
-                  <Button className="bg-purple-600 text-sm hover:bg-purple-700">
-                    <Plus className="mr-2 h-4 w-4" />
-                    <span className="hidden sm:inline">New Quest</span>
-                    <span className="sm:hidden">New</span>
-                  </Button>
-                  <MoreHorizontal className="h-5 w-5 text-gray-400" />
+                  <Sheet open={isNewQuestOpen} onOpenChange={setIsNewQuestOpen}>
+                    <SheetTrigger asChild>
+                      <Button className="bg-purple-600 text-sm hover:bg-purple-700">
+                        <Plus className="mr-2 h-4 w-4" />
+                        <span className="hidden sm:inline">New Quest</span>
+                        <span className="sm:hidden">New</span>
+                      </Button>
+                    </SheetTrigger>
+                    <SheetContent className="w-full max-w-3xl p-0">
+                      <NewQuestFlow
+                        onClose={() => {
+                          setIsNewQuestOpen(false);
+                          setQuests(dataService.getQuests());
+                        }}
+                      />
+                    </SheetContent>
+                  </Sheet>
+                  <div className="h-5 w-5 text-gray-400" />
                 </div>
               </div>
             </CardHeader>
@@ -469,7 +666,8 @@ export default function Dashboardk() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="bg-purple-600 text-white hover:bg-purple-700">
+                    className="bg-purple-600 text-white hover:bg-purple-700"
+                  >
                     1
                   </Button>
                   <Button variant="ghost" size="sm">
