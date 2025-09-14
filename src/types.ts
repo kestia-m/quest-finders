@@ -8,10 +8,12 @@ export interface User {
     lifestyle: string;
     perfectTrip: string;
   };
+  //stats: { placesVisited: number; questsCompleted: number; }
   progression?: {
     title?: string;
     stats?: {
       placesVisited?: number;
+      questsCompleted?: number;
     };
     currentXP?: number;
     nextLevelXP?: number;
@@ -31,3 +33,19 @@ export interface Recommendation extends Place {
   avgRating: number;
   influencerEndorsed: boolean;
 }
+
+export interface Spot {
+  id: string;
+  name: string;
+  description: string;
+  image?: string;
+  location: {
+    lat: number;
+    lng: number;
+  };
+  category: string;
+  cost: {
+    [key: string]: number;
+  };
+  //reviews: Review[];
+};

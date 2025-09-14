@@ -5,7 +5,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Check,
-  Wallet,
+  //Wallet,
   Info,
   X,
 } from "lucide-react";
@@ -342,7 +342,7 @@ export default function ResourceMeter({ userId, selectedRange, onEdit }: Resourc
           <Info className="h-4 w-4" />
         </CardTitle>
         <Button variant="ghost" size="sm" onClick={onEdit}>
-          <Wallet className="h-4 w-4 mr-1" />
+          {/*<Wallet className="h-4 w-4 mr-1" />*/}
           Edit
         </Button>
       </CardHeader>

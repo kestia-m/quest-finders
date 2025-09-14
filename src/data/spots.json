@@ -3,40 +3,73 @@
     "id": 1,
     "name": "Kruger National Park",
     "category": "Wildlife",
-    "description": "Iconic safari spot with Big Five animals. Influencer-endorsed by SA bloggers.",
+    "description": "Iconic safari spot with Big Five animals. Influencer-endorsed by SA bloggers for epic sightings.",
     "location": { "lat": -24.0, "lng": 31.5 },
+    "influencerEndorsed": true,
+    "endorsedBy": "SA Travel Blogger (@satravelblogger)",
     "cost": { "entry": 500, "transport": 2000, "accommodation": 1500 },
-    "reviews": [{ "user": "Traveler1", "rating": 5, "comment": "Amazing wildlife!" }],
+    "reviews": [
+      { "user": "Traveler1", "rating": 5, "comment": "Amazing wildlife! Highly recommended." },
+      { "user": "InfluencerFan", "rating": 4.8, "comment": "Blogger's pick – golden hour drives are magical." }
+    ],
     "image": "kruger.jpg"
   },
   {
     "id": 2,
-    "name": "Addo Elephant Park",
+    "name": "Lion & Safari Park",
     "category": "Wildlife",
-    "description": "Budget-friendly self-drive safari near Port Elizabeth.",
-    "location": { "lat": -33.5, "lng": 25.7 },
-    "cost": { "entry": 300, "transport": 800, "accommodation": 800 },
-    "reviews": [{ "user": "BudgetTraveler", "rating": 4, "comment": "Great value!" }],
-    "image": "addo.jpg"
+    "description": "Get up close with lions and giraffes near Johannesburg. TikTok-famous for family adventures.",
+    "location": { "lat": -25.9, "lng": 27.9 },
+    "influencerEndorsed": true,
+    "endorsedBy": "The Ridderhofs (@the_ridderhofs)",
+    "cost": { "entry": 300, "transport": 500, "accommodation": 800 },
+    "reviews": [
+      { "user": "FamilyTripper", "rating": 4.5, "comment": "Kids loved the giraffe feeding!" },
+      { "user": "TikTokTraveler", "rating": 5, "comment": "Viral spot – must-visit near JNB." }
+    ],
+    "image": "lion-safari-park.jpg"
   },
   {
     "id": 3,
-    "name": "Garden Route (Tsitsikamma)",
-    "category": "Adventure",
-    "description": "Hiking, beaches, and bungee jumping along the coast.",
-    "location": { "lat": -34.0, "lng": 23.5 },
-    "cost": { "entry": 0, "transport": 1200, "accommodation": 1000 },
-    "reviews": [{ "user": "Adventurer", "rating": 5, "comment": "Epic views!" }],
-    "image": "garden-route.jpg"
+    "name": "Tala Game Reserve",
+    "category": "Wildlife",
+    "description": "Budget-friendly rhinos and cheetahs near Pietermaritzburg. Endorsed for eco-tours.",
+    "location": { "lat": -29.8, "lng": 30.6 },
+    "influencerEndorsed": true,
+    "endorsedBy": "EcoExplorerSA (@ecoexplorersa)",
+    "cost": { "entry": 250, "transport": 400, "accommodation": 600 },
+    "reviews": [
+      { "user": "EcoLover", "rating": 4.7, "comment": "Sustainable and thrilling!" },
+      { "user": "LocalGuide", "rating": 4.9, "comment": "Hidden gem in KZN – blogger approved." }
+    ],
+    "image": "tala-game-reserve.jpg"
   },
   {
     "id": 4,
-    "name": "Cape Town Table Mountain",
-    "category": "Landmark",
-    "description": "Cable car ride with panoramic views.",
-    "location": { "lat": -33.96, "lng": 18.42 },
-    "cost": { "entry": 400, "transport": 500, "accommodation": 1200 },
-    "reviews": [{ "user": "Sightseer", "rating": 4.5, "comment": "Must-see!" }],
-    "image": "table-mountain.jpg"
+    "name": "Pretoria National Zoological Garden",
+    "category": "Wildlife",
+    "description": "Urban zoo with safaris and cable cars in PTA. Influencer pick for city escapes.",
+    "location": { "lat": -25.74, "lng": 28.19 },
+    "influencerEndorsed": true,
+    "endorsedBy": "PTAInsider (@ptainsider)",
+    "cost": { "entry": 100, "transport": 200, "accommodation": 500 },
+    "reviews": [
+      { "user": "CityDweller", "rating": 4.2, "comment": "Perfect for a quick PTA adventure." },
+      { "user": "ZooFan", "rating": 4.5, "comment": "Cable car views are Instagram gold." }
+    ],
+    "image": "pretoria-zoo.jpg"
+  },
+  {
+    "id": 5,
+    "name": "Bisley Valley Nature Reserve",
+    "category": "Nature",
+    "description": "Hiking trails and birdwatching near Pietermaritzburg. Endorsed for serene walks.",
+    "location": { "lat": -29.6, "lng": 30.4 },
+    "influencerEndorsed": false,
+    "cost": { "entry": 50, "transport": 150, "accommodation": 400 },
+    "reviews": [
+      { "user": "HikerPro", "rating": 4.3, "comment": "Peaceful trails with great views." }
+    ],
+    "image": "bisley-valley.jpg"
   }
 ]

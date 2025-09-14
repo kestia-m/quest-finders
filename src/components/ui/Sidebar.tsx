@@ -24,11 +24,13 @@ import { Link, useLocation } from "react-router-dom";
 const sidebarItems = [
   { icon: BarChart3, label: "Dashboard", href: "/dashboard-k", hasSubmenu: false },
   { icon: Target, label: "Quests", href: "/quests", hasSubmenu: true },
-  { icon: Trophy, label: "Leaderboards", href: "/leaderboards", hasSubmenu: false },
   { icon: Wallet, label: "Budget", href: "/budget", hasSubmenu: false },
+  { icon: Award, label: "Rewards", href: "/rewards", hasSubmenu: false },
+  { icon: Trophy, label: "Leaderboards", href: "/leaderboards", hasSubmenu: false },
+
   { icon: UsersIcon, label: "Multiplayer", href: "/multiplayer", hasSubmenu: false },
   { icon: MapPin, label: "Spots", href: "/spots", hasSubmenu: false },
-  { icon: Award, label: "Rewards", href: "/rewards", hasSubmenu: false },
+
   { icon: Settings, label: "Settings", href: "/settings", hasSubmenu: false },
 ];
 

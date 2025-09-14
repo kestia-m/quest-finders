@@ -10,7 +10,6 @@ import { useEffect, useState } from "react";
 import type { User } from "@/types";
 import { type Budget, type Quest, type Activity } from "@/services/dataService";
 import { SetBudgetFlow } from "@/components/budget/ResourceMeter";
-import { Sidebar, MobileSidebar } from "@/components/ui/Sidebar";
 
 function getCategoryBadge(category: string) {
   switch (category) {
@@ -44,15 +43,11 @@ export default function Budget({ user }: BudgetProps) {
     setQuests(dataService.getQuests());
   }, [userId, selectedRange]);
 
-  // Calculate total budget and amount spent from the latest budget
   const latestBudget = budgets[0] || { totalBudget: 0, currentSpent: 0, categories: { transport: 0, accommodation: 0, activities: 0, food: 0 } };
   const totalBudget = latestBudget.totalBudget || 0;
   const amountSpent = latestBudget.currentSpent || 0;
   const progressPercentage = totalBudget > 0 ? Math.min((amountSpent / totalBudget) * 100, 100) : 0;
 
-  // Calculate spending per category using latest budget as baseline, supplemented by quest costs
-  const spots = dataService.getSpots();
-  const activitiesData = dataService.getActivities;
   const categorySpending: { [key: string]: number } & { food: number; transport: number; accommodation: number; activities: number; uncategorized: number } = {
     food: latestBudget.categories.food || 0,
     transport: latestBudget.categories.transport || 0,
@@ -64,48 +59,25 @@ export default function Budget({ user }: BudgetProps) {
     .filter((q) => q.completed)
     .forEach((quest) => {
       const category = quest.category || "uncategorized";
-      const spot = spots.find((s) => s.name === quest.requirements[0]); // Match first requirement to spot name
-      if (spot) {
-        categorySpending.transport += spot.cost.transport || 0;
-        categorySpending.accommodation += spot.cost.accommodation || 0;
-        const activities = activitiesData(spot.id) || [];
-        activities.forEach((activity: Activity) => {
-          categorySpending.activities += activity.estimatedCost || 0;
-        });
-      } else {
-        categorySpending[category] += quest.cost || 0; // Fallback to quest cost if no spot match
-      }
+      categorySpending[category] = (categorySpending[category] || 0) + (quest.cost || 0);
     });
 
-  // Get recent quests with associated activities
   const recentQuestsWithActivities = [...quests]
     .sort((a, b) => (b.id || 0) - (a.id || 0))
     .slice(0, 5)
-    .map((quest) => {
-      const spot = spots.find((s) => s.name === quest.requirements[0]);
-      const activities = spot ? activitiesData(spot.id) || [] : [];
-      return { ...quest, activities };
-    });
+    .map((quest) => ({
+      ...quest,
+      activities: [] as Activity[], // No activities available due to missing activitiesData
+    }));
 
-  // Get alerts from the latest budget
   const alerts = latestBudget.alerts || [];
 
   return (
     <div className="bg-white flex h-screen">
-      <Sidebar currentPath="/budget" />
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <header className="border-b p-4 md:p-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <MobileSidebar />
-              <h1 className="text-xl font-semibold md:text-2xl">Budget</h1>
-            </div>
-          </div>
-        </header>
-        <main className="flex-1 overflow-auto p-6">
+      <div className="flex-1 flex flex-col">
+        <main className="flex-1 p-6">
           <div className="w-full max-w-[--breakpoint-lg] mx-auto">
             <div className="mt-6 grid sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-3 gap-6">
-              {/* Budget Overview Card */}
               <Card className="col-span-1 md:col-span-2 lg:col-span-1">
                 <CardHeader>
                   <CardTitle className="text-base font-semibold md:text-lg">Budget Overview</CardTitle>
@@ -139,8 +111,6 @@ export default function Budget({ user }: BudgetProps) {
                   </div>
                 </CardContent>
               </Card>
-
-              {/* Budget Management Card */}
               <Card className="col-span-1 md:col-span-2 lg:col-span-1">
                 <CardHeader>
                   <CardTitle className="text-base font-semibold md:text-lg">Budget Management</CardTitle>
@@ -183,8 +153,6 @@ export default function Budget({ user }: BudgetProps) {
                   </div>
                 </CardContent>
               </Card>
-
-              {/* Budget Alerts Card */}
               <Card className="col-span-1 md:col-span-2 lg:col-span-1">
                 <CardHeader>
                   <CardTitle className="text-base font-semibold md:text-lg">Budget Alerts</CardTitle>
@@ -206,8 +174,6 @@ export default function Budget({ user }: BudgetProps) {
                 </CardContent>
               </Card>
             </div>
-
-            {/* Category Spending Summary */}
             <Card className="mt-6">
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-base font-semibold md:text-lg">
@@ -225,8 +191,6 @@ export default function Budget({ user }: BudgetProps) {
                 </ul>
               </CardContent>
             </Card>
-
-            {/* Recent Activities Table */}
             <Card className="mt-6">
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-base font-semibold md:text-lg">
@@ -265,7 +229,7 @@ export default function Budget({ user }: BudgetProps) {
                           <td className="p-3 md:p-4">{getCategoryBadge(quest.category || "uncategorized")}</td>
                           <td className="p-3 md:p-4">
                             {quest.activities.length > 0 ? (
-                              quest.activities.map((activity, index) => (
+                              quest.activities.map((activity: Activity, index: number) => (
                                 <div key={index} className="text-sm">
                                   {activity.name} ({activity.estimatedCost} ZAR)
                                 </div>
@@ -275,7 +239,7 @@ export default function Budget({ user }: BudgetProps) {
                             )}
                           </td>
                           <td className="p-3 text-sm md:p-4">
-                            {quest.activities.reduce((sum, activity) => sum + (activity.estimatedCost || 0), 0)} ZAR
+                            {quest.activities.reduce((sum: number, activity: Activity) => sum + (activity.estimatedCost || 0), 0)} ZAR
                           </td>
                         </tr>
                       ))}

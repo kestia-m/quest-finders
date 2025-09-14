@@ -35,7 +35,6 @@ import {
   type MultiplayerGroup,
 } from "@/services/dataService";
 import { Link } from "react-router-dom";
-import { Sidebar, MobileSidebar } from "@/components/ui/Sidebar";
 
 const questSteps = [
   { id: 1, title: "Quest Category", description: "Select the quest category" },
@@ -49,7 +48,7 @@ function getCategoryBadge(category: string) {
     case "Wildlife":
       return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">{category}</Badge>;
     case "Adventure":
-      return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">{category}</Badge>;
+      return <Badge className="bg-blue-100 text-blue-800 hover:bg-green-100">{category}</Badge>;
     case "Landmark":
       return <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-100">{category}</Badge>;
     case "Events":
@@ -271,8 +270,8 @@ function NewQuestFlow({ onClose }: { onClose: () => void }) {
   };
 
   return (
-    <div className="flex items-center justify-center p-4">
-      <Card className="w-full max-w-3xl shadow-lg">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30" style={{ backgroundColor: "rgba(0, 0, 0, 0.3)" }}>
+      <Card className="w-full max-w-3xl bg-white shadow-lg" style={{ backgroundColor: "var(--card)", color: "var(--card-foreground)" }}>
         <CardHeader className="pb-0">
           <div className="mb-6 flex items-center justify-between">
             {questSteps.map((step) => (
@@ -396,13 +395,10 @@ export default function Dashboard({ user }: DashboardProps) {
 
   return (
     <div className="bg-white flex h-screen">
-      <Sidebar currentPath="/dashboard-k" />
-      <div className="flex flex-1 flex-col overflow-hidden">
+      <div className="flex flex-1 flex-col">
         <header className="border-b p-4 md:p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <MobileSidebar />
-              <h1 className="text-xl font-semibold md:text-2xl">Dashboard</h1>
             </div>
             <Select value={selectedRange} onValueChange={setSelectedRange}>
               <SelectTrigger className="w-32 md:w-40">
@@ -417,7 +413,7 @@ export default function Dashboard({ user }: DashboardProps) {
             </Select>
           </div>
         </header>
-        <main className="flex-1 overflow-auto p-4 md:p-6">
+        <main className="flex-1 p-4 md:p-6">
           <div className="mb-6 grid grid-cols-1 gap-4 md:mb-8 md:gap-6 xl:grid-cols-4">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-3 xl:col-span-3">
               <Card>
@@ -465,7 +461,7 @@ export default function Dashboard({ user }: DashboardProps) {
                   />
                 </div>
               </SheetTrigger>
-              <SheetContent className="w-full max-w-3xl p-0">
+              <SheetContent className="w-full max-w-3xl p-0 bg-white">
                 <SetBudgetFlow
                   userId={userId}
                   selectedRange={selectedRange}
@@ -590,7 +586,7 @@ export default function Dashboard({ user }: DashboardProps) {
                         <span className="sm:hidden">New</span>
                       </Button>
                     </SheetTrigger>
-                    <SheetContent className="w-full max-w-3xl p-0">
+                    <SheetContent className="w-full max-w-3xl p-0 bg-white">
                       <NewQuestFlow
                         onClose={() => {
                           setIsNewQuestOpen(false);

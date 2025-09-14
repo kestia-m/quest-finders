@@ -3,11 +3,8 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-//import { Badge } from "@/components/ui/badge";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Legend } from "recharts";
 import { Info } from "lucide-react";
-//import { cn } from "@/lib/utils";
-import { Sidebar, MobileSidebar } from "@/components/ui/Sidebar";
 import { dataService } from "@/services/dataService";
 import { type UserRewards } from "@/services/dataService";
 
@@ -17,7 +14,7 @@ export default function Rewards({ userId }: { userId: string }) {
     userId,
     totalRands: 0,
     xpEarned: 0,
-    lastUpdated: new Date("2025-09-14T05:38:00Z").toISOString(), // Updated to current time
+    lastUpdated: new Date("2025-09-14T05:38:00Z").toISOString(),
     sponsorContributions: [],
   });
 
@@ -27,7 +24,7 @@ export default function Rewards({ userId }: { userId: string }) {
       userId,
       totalRands: 0,
       xpEarned: 0,
-      lastUpdated: new Date("2025-09-14T05:38:00Z").toISOString(), // Updated to current time
+      lastUpdated: new Date("2025-09-14T05:38:00Z").toISOString(),
       sponsorContributions: [],
     };
     setRewards(fetchedRewards);
@@ -54,7 +51,6 @@ export default function Rewards({ userId }: { userId: string }) {
     setRewards(updatedRewards);
   };
 
-  // Mock data for chart (simulating rewards history)
   const rewardsHistory = [
     { date: "2025-09-01", xp: 0, rands: 0 },
     { date: "2025-09-07", xp: 50, rands: 5 },
@@ -67,17 +63,9 @@ export default function Rewards({ userId }: { userId: string }) {
 
   return (
     <div className="bg-white flex h-screen">
-      <Sidebar currentPath="/rewards" />
-      <div className="flex flex-1 flex-col overflow-hidden">
-        <header className="border-b p-4 md:p-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <MobileSidebar />
-              <h1 className="text-xl font-semibold md:text-2xl">Rewards</h1>
-            </div>
-          </div>
-        </header>
-        <main className="flex-1 overflow-auto p-4 md:p-6">
+      <div className="flex flex-1 flex-col">
+
+        <main className="flex-1 p-4 md:p-6">
           <div className="mb-6 grid grid-cols-1 gap-4 md:mb-8 md:gap-6 xl:grid-cols-4">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-3 xl:col-span-3">
               <Card>

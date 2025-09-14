@@ -1,0 +1,142 @@
+
+{
+  "users": [
+    {
+      "id": "user1",
+      "username": "ExplorerJane",
+      "email": "jane@example.com",
+      "preferences": {
+        "relaxStyle": "Nature Walks",
+        "favoriteActivity": "Hiking",
+        "budget": "2000-5000",
+        "lifestyle": "Adventurous soul",
+        "perfectTrip": "5-day wildlife getaway with friends",
+        "likes": ["Wildlife spotting", "Local cuisine"],
+        "hobbies": ["Photography", "Birdwatching"],
+        "favoriteFood": "Braai (BBQ)",
+        "wouldRather": {
+          "beachOrMountains": "Mountains",
+          "soloOrGroup": "Group",
+          "luxuryOrBudget": "Budget"
+        }
+      },
+      "progression": {
+        "level": 3,
+        "currentXP": 1200,
+        "nextLevelXP": 1500,
+        "title": "Bushveld Explorer",
+        "badges": [
+          {
+            "id": "1",
+            "name": "Vibe Voyager",
+            "icon": "crown",
+            "description": "Completed 5 events"
+          },
+          {
+            "id": "2",
+            "name": "Safari Master",
+            "icon": "star",
+            "description": "Explored 3 wildlife spots"
+          }
+        ],
+        "stats": {
+          "placesVisited": 12,
+          "questsCompleted": 5
+        }
+      },
+      "budgets": [
+        {
+          "id": 1,
+          "date": "2025-09-14",
+          "totalBudget": 20000,
+          "currentSpent": 5000
+        }
+      ]
+    },
+    {
+      "id": "user2",
+      "username": "SafariSam",
+      "email": "sam@example.com",
+      "preferences": {
+        "relaxStyle": "Music Chillout",
+        "favoriteActivity": "Concert Hopping",
+        "budget": "5000-10000",
+        "lifestyle": "Urban explorer",
+        "perfectTrip": "Weekend festival trip",
+        "likes": ["Live music", "Street food"],
+        "hobbies": ["Dancing", "Socializing"],
+        "favoriteFood": "Bunny chow",
+        "wouldRather": {
+          "beachOrMountains": "Beach",
+          "soloOrGroup": "Group",
+          "luxuryOrBudget": "Luxury"
+        }
+      },
+      "progression": {
+        "level": 2,
+        "currentXP": 800,
+        "nextLevelXP": 1500,
+        "title": "Festival Fanatic",
+        "badges": [
+          {
+            "id": "3",
+            "name": "Thrifty Traveler",
+            "icon": "map-pin",
+            "description": "Stayed under budget 3 times"
+          }
+        ],
+        "stats": {
+          "placesVisited": 8,
+          "questsCompleted": 2
+        }
+      },
+      "budgets": [
+        {
+          "id": 2,
+          "date": "2025-09-10",
+          "totalBudget": 15000,
+          "currentSpent": 12000
+        }
+      ]
+    },
+    {
+      "id": "user3",
+      "username": "BudgetBob",
+      "email": "bob@example.com",
+      "preferences": {
+        "relaxStyle": "Gaming Marathon",
+        "favoriteActivity": "Beach Lounging",
+        "budget": "1000-3000",
+        "lifestyle": "Relaxed nomad",
+        "perfectTrip": "Budget beach escape",
+        "likes": ["Sunsets", "Reading"],
+        "hobbies": ["Surfing", "Yoga"],
+        "favoriteFood": "Bobotie",
+        "wouldRather": {
+          "beachOrMountains": "Beach",
+          "soloOrGroup": "Solo",
+          "luxuryOrBudget": "Budget"
+        }
+      },
+      "progression": {
+        "level": 1,
+        "currentXP": 300,
+        "nextLevelXP": 1000,
+        "title": "Newbie Nomad",
+        "badges": [],
+        "stats": {
+          "placesVisited": 3,
+          "questsCompleted": 1
+        }
+      },
+      "budgets": [
+        {
+          "id": 3,
+          "date": "2025-09-01",
+          "totalBudget": 5000,
+          "currentSpent": 2000
+        }
+      ]
+    }
+  ]
+}
