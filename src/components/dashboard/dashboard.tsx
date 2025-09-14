@@ -34,7 +34,8 @@ import {
   type LeaderboardEntry,
   type MultiplayerGroup,
 } from "@/services/dataService";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { Sidebar, MobileSidebar } from "@/components/ui/Sidebar";
 
 const questSteps = [
   { id: 1, title: "Quest Category", description: "Select the quest category" },
@@ -48,7 +49,7 @@ function getCategoryBadge(category: string) {
     case "Wildlife":
       return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">{category}</Badge>;
     case "Adventure":
-      return <Badge className="bg-blue-100 text-blue-800 hover:bg-green-100">{category}</Badge>;
+      return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">{category}</Badge>;
     case "Landmark":
       return <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-100">{category}</Badge>;
     case "Events":
@@ -356,14 +357,16 @@ export default function Dashboard({ user }: DashboardProps) {
   const completedQuestsCount = quests.filter((q) => q.completed).length;
 
   const getBudgetData = () => {
-    const sortedBudgets = [...budgets].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    const sortedBudgets = [...budgets].sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
     if (selectedRange === "30days") {
       return sortedBudgets.map((budget) => ({
         day: new Date(budget.date).toLocaleDateString("en-US", { day: "numeric", month: "short" }),
-        food: budget.categories.food,
-        transport: budget.categories.transport,
-        accommodation: budget.categories.accommodation,
-        activities: budget.categories.activities,
+        food: budget.categories.food || 0,
+        transport: budget.categories.transport || 0,
+        accommodation: budget.categories.accommodation || 0,
+        activities: budget.categories.activities || 0,
       }));
     } else if (selectedRange === "60days" || selectedRange === "90days" || selectedRange === "1year") {
       const months: { [key: string]: { food: number; transport: number; accommodation: number; activities: number } } = {};
@@ -373,10 +376,10 @@ export default function Dashboard({ user }: DashboardProps) {
         if (!months[monthKey]) {
           months[monthKey] = { food: 0, transport: 0, accommodation: 0, activities: 0 };
         }
-        months[monthKey].food += budget.categories.food;
-        months[monthKey].transport += budget.categories.transport;
-        months[monthKey].accommodation += budget.categories.accommodation;
-        months[monthKey].activities += budget.categories.activities;
+        months[monthKey].food += budget.categories.food || 0;
+        months[monthKey].transport += budget.categories.transport || 0;
+        months[monthKey].accommodation += budget.categories.accommodation || 0;
+        months[monthKey].activities += budget.categories.activities || 0;
       });
       const monthData = Object.keys(months).map((month) => ({
         month,
@@ -393,303 +396,306 @@ export default function Dashboard({ user }: DashboardProps) {
 
   const budgetData = getBudgetData();
 
+  const location = useLocation();
+
   return (
-    <div className="bg-white flex h-screen">
+    <div className="flex h-screen bg-white">
+      <Sidebar currentPath={location.pathname} />
       <div className="flex flex-1 flex-col">
-        <header className="border-b p-4 md:p-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-            </div>
-            <Select value={selectedRange} onValueChange={setSelectedRange}>
-              <SelectTrigger className="w-32 md:w-40">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="30days">Last 30 Days</SelectItem>
-                <SelectItem value="60days">Last 60 Days</SelectItem>
-                <SelectItem value="90days">Last 90 Days</SelectItem>
-                <SelectItem value="1year">Last Year</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+        <header className="border-b p-4 flex items-center justify-between">
+          <MobileSidebar />
+          <h1 className="text-xl font-semibold">Dashboard</h1>
+          <Select value={selectedRange} onValueChange={setSelectedRange}>
+            <SelectTrigger className="w-32 md:w-40">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="30days">Last 30 Days</SelectItem>
+              <SelectItem value="60days">Last 60 Days</SelectItem>
+              <SelectItem value="90days">Last 90 Days</SelectItem>
+              <SelectItem value="1year">Last Year</SelectItem>
+            </SelectContent>
+          </Select>
         </header>
-        <main className="flex-1 p-4 md:p-6">
-          <div className="mb-6 grid grid-cols-1 gap-4 md:mb-8 md:gap-6 xl:grid-cols-4">
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-3 xl:col-span-3">
-              <Card>
-                <CardContent className="p-4 md:p-6">
-                  <div className="mb-2 flex items-center gap-3">
-                    <div className="h-2 w-2 rounded-full bg-purple-500"></div>
-                    <span className="text-muted-foreground text-sm">Total Budget</span>
+        <main className="flex-1 p-4 md:p-6 overflow-auto">
+          <div className="w-full max-w-[--breakpoint-lg] mx-auto">
+            <div className="mb-6 grid grid-cols-1 gap-4 md:mb-8 md:gap-6 xl:grid-cols-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-3 xl:col-span-3">
+                <Card>
+                  <CardContent className="p-4 md:p-6">
+                    <div className="mb-2 flex items-center gap-3">
+                      <div className="h-2 w-2 rounded-full bg-purple-500"></div>
+                      <span className="text-muted-foreground text-sm">Total Budget</span>
+                    </div>
+                    <div className="mb-1 text-2xl font-bold text-gray-900 md:text-3xl">
+                      {(budgets[0]?.totalBudget || 0)} ZAR
+                    </div>
+                    <div className="text-sm text-green-600">+5% from last month</div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-4 md:p-6">
+                    <div className="mb-2 flex items-center gap-3">
+                      <div className="h-2 w-2 rounded-full bg-green-500"></div>
+                      <span className="text-muted-foreground text-sm">Current XP</span>
+                    </div>
+                    <div className="mb-1 text-2xl font-bold text-gray-900 md:text-3xl">{userLeaderboard.xp}</div>
+                    <div className="text-sm text-green-600">+50 this week</div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-4 md:p-6">
+                    <div className="mb-2 flex items-center gap-3">
+                      <div className="h-2 w-2 rounded-full bg-blue-500"></div>
+                      <span className="text-muted-foreground text-sm">Rewards Earned</span>
+                    </div>
+                    <div className="mb-1 text-2xl font-bold text-gray-900 md:text-3xl">
+                      {userLeaderboard.badges?.length || 0}
+                    </div>
+                    <div className="text-sm text-green-600">+{completedQuestsCount} quests completed</div>
+                  </CardContent>
+                </Card>
+              </div>
+              <Sheet open={isEditBudgetOpen} onOpenChange={setIsEditBudgetOpen}>
+                <SheetTrigger asChild>
+                  <div>
+                    <ResourceMeter
+                      userId={userId}
+                      selectedRange={selectedRange}
+                      onEdit={() => setIsEditBudgetOpen(true)}
+                    />
                   </div>
-                  <div className="mb-1 text-2xl font-bold text-gray-900 md:text-3xl">
-                    {(budgets[0]?.totalBudget || 0)} ZAR
-                  </div>
-                  <div className="text-sm text-green-600">+5% from last month</div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="p-4 md:p-6">
-                  <div className="mb-2 flex items-center gap-3">
-                    <div className="h-2 w-2 rounded-full bg-green-500"></div>
-                    <span className="text-muted-foreground text-sm">Current XP</span>
-                  </div>
-                  <div className="mb-1 text-2xl font-bold text-gray-900 md:text-3xl">{userLeaderboard.xp}</div>
-                  <div className="text-sm text-green-600">+50 this week</div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="p-4 md:p-6">
-                  <div className="mb-2 flex items-center gap-3">
-                    <div className="h-2 w-2 rounded-full bg-blue-500"></div>
-                    <span className="text-muted-foreground text-sm">Rewards Earned</span>
-                  </div>
-                  <div className="mb-1 text-2xl font-bold text-gray-900 md:text-3xl">
-                    {userLeaderboard.badges?.length || 0}
-                  </div>
-                  <div className="text-sm text-green-600">+{completedQuestsCount} quests completed</div>
-                </CardContent>
-              </Card>
-            </div>
-            <Sheet open={isEditBudgetOpen} onOpenChange={setIsEditBudgetOpen}>
-              <SheetTrigger asChild>
-                <div>
-                  <ResourceMeter
+                </SheetTrigger>
+                <SheetContent className="w-full max-w-3xl p-0 bg-white">
+                  <SetBudgetFlow
                     userId={userId}
                     selectedRange={selectedRange}
-                    onEdit={() => setIsEditBudgetOpen(true)}
+                    onClose={() => setIsEditBudgetOpen(false)}
+                    onSave={(newBudget) => {
+                      setBudgets([newBudget, ...budgets]);
+                      setIsEditBudgetOpen(false);
+                    }}
                   />
-                </div>
-              </SheetTrigger>
-              <SheetContent className="w-full max-w-3xl p-0 bg-white">
-                <SetBudgetFlow
-                  userId={userId}
-                  selectedRange={selectedRange}
-                  onClose={() => setIsEditBudgetOpen(false)}
-                  onSave={(newBudget) => {
-                    setBudgets([newBudget, ...budgets]);
-                    setIsEditBudgetOpen(false);
-                  }}
-                />
-              </SheetContent>
-            </Sheet>
-          </div>
-          <div className="mb-6 grid grid-cols-1 gap-4 md:mb-8 md:gap-6 xl:grid-cols-4">
-            <Card className="xl:col-span-3">
+                </SheetContent>
+              </Sheet>
+            </div>
+            <div className="mb-6 grid grid-cols-1 gap-4 md:mb-8 md:gap-6 xl:grid-cols-4">
+              <Card className="xl:col-span-3">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="flex items-center gap-2 text-base font-semibold md:text-lg">
+                      Budget Allocation
+                      <Info className="h-4 w-4 text-gray-400" />
+                    </CardTitle>
+                    <div className="h-5 w-5 text-gray-400" />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="mb-4 h-48 md:h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={budgetData}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                        <XAxis
+                          dataKey={selectedRange === "30days" ? "day" : "month"}
+                          axisLine={false}
+                          tickLine={false}
+                          tick={{ fontSize: 12, fill: "#666" }}
+                        />
+                        <YAxis
+                          axisLine={false}
+                          tickLine={false}
+                          tick={{ fontSize: 12, fill: "#666" }}
+                        />
+                        <Legend />
+                        <Area
+                          type="monotone"
+                          dataKey="food"
+                          stroke="#ff6384"
+                          strokeWidth={2}
+                          fill="url(#colorFood)"
+                        />
+                        <Area
+                          type="monotone"
+                          dataKey="transport"
+                          stroke="#36a2eb"
+                          strokeWidth={2}
+                          fill="url(#colorTransport)"
+                        />
+                        <Area
+                          type="monotone"
+                          dataKey="accommodation"
+                          stroke="#ffcd56"
+                          strokeWidth={2}
+                          fill="url(#colorAccommodation)"
+                        />
+                        <Area
+                          type="monotone"
+                          dataKey="activities"
+                          stroke="#4bc0c0"
+                          strokeWidth={2}
+                          fill="url(#colorActivities)"
+                        />
+                        <defs>
+                          <linearGradient id="colorFood" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#ff6384" stopOpacity={0.3} />
+                            <stop offset="95%" stopColor="#ff6384" stopOpacity={0.05} />
+                          </linearGradient>
+                          <linearGradient id="colorTransport" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#36a2eb" stopOpacity={0.3} />
+                            <stop offset="95%" stopColor="#36a2eb" stopOpacity={0.05} />
+                          </linearGradient>
+                          <linearGradient id="colorAccommodation" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#ffcd56" stopOpacity={0.3} />
+                            <stop offset="95%" stopColor="#ffcd56" stopOpacity={0.05} />
+                          </linearGradient>
+                          <linearGradient id="colorActivities" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#4bc0c0" stopOpacity={0.3} />
+                            <stop offset="95%" stopColor="#4bc0c0" stopOpacity={0.05} />
+                          </linearGradient>
+                        </defs>
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4 md:p-6">
+                  <div className="mb-2 text-xs text-gray-500">Rank as of Today</div>
+                  <div className="mb-4 text-xl font-bold text-gray-900 md:text-2xl">#{userLeaderboard.rank}</div>
+                  <div className="space-y-3">
+                    <div>
+                      <div className="mb-1 text-xs text-green-600">Badges Earned</div>
+                      <div className="text-lg font-semibold">{userLeaderboard.badges?.length || 0}</div>
+                    </div>
+                    <div>
+                      <div className="mb-1 text-xs text-blue-600">Groups Joined</div>
+                      <div className="text-lg font-semibold">{multiplayerGroups.length}</div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+            <Card>
               <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
                   <CardTitle className="flex items-center gap-2 text-base font-semibold md:text-lg">
-                    Budget Allocation
+                    Active Quests
                     <Info className="h-4 w-4 text-gray-400" />
                   </CardTitle>
-                  <div className="h-5 w-5 text-gray-400" />
+                  <div className="flex items-center gap-2">
+                    <Sheet open={isNewQuestOpen} onOpenChange={setIsNewQuestOpen}>
+                      <SheetTrigger asChild>
+                        <Button className="bg-purple-600 text-sm hover:bg-purple-700">
+                          <Plus className="mr-2 h-4 w-4" />
+                          <span className="hidden sm:inline">New Quest</span>
+                          <span className="sm:hidden">New</span>
+                        </Button>
+                      </SheetTrigger>
+                      <SheetContent className="w-full max-w-3xl p-0 bg-white">
+                        <NewQuestFlow
+                          onClose={() => {
+                            setIsNewQuestOpen(false);
+                            setQuests(dataService.getQuests());
+                          }}
+                        />
+                      </SheetContent>
+                    </Sheet>
+                    <div className="h-5 w-5 text-gray-400" />
+                  </div>
                 </div>
               </CardHeader>
-              <CardContent>
-                <div className="mb-4 h-48 md:h-64">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={budgetData}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                      <XAxis
-                        dataKey={selectedRange === "30days" ? "day" : "month"}
-                        axisLine={false}
-                        tickLine={false}
-                        tick={{ fontSize: 12, fill: "#666" }}
-                      />
-                      <YAxis
-                        axisLine={false}
-                        tickLine={false}
-                        tick={{ fontSize: 12, fill: "#666" }}
-                      />
-                      <Legend />
-                      <Area
-                        type="monotone"
-                        dataKey="food"
-                        stroke="#ff6384"
-                        strokeWidth={2}
-                        fill="url(#colorFood)"
-                      />
-                      <Area
-                        type="monotone"
-                        dataKey="transport"
-                        stroke="#36a2eb"
-                        strokeWidth={2}
-                        fill="url(#colorTransport)"
-                      />
-                      <Area
-                        type="monotone"
-                        dataKey="accommodation"
-                        stroke="#ffcd56"
-                        strokeWidth={2}
-                        fill="url(#colorAccommodation)"
-                      />
-                      <Area
-                        type="monotone"
-                        dataKey="activities"
-                        stroke="#4bc0c0"
-                        strokeWidth={2}
-                        fill="url(#colorActivities)"
-                      />
-                      <defs>
-                        <linearGradient id="colorFood" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#ff6384" stopOpacity={0.3} />
-                          <stop offset="95%" stopColor="#ff6384" stopOpacity={0.05} />
-                        </linearGradient>
-                        <linearGradient id="colorTransport" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#36a2eb" stopOpacity={0.3} />
-                          <stop offset="95%" stopColor="#36a2eb" stopOpacity={0.05} />
-                        </linearGradient>
-                        <linearGradient id="colorAccommodation" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#ffcd56" stopOpacity={0.3} />
-                          <stop offset="95%" stopColor="#ffcd56" stopOpacity={0.05} />
-                        </linearGradient>
-                        <linearGradient id="colorActivities" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#4bc0c0" stopOpacity={0.3} />
-                          <stop offset="95%" stopColor="#4bc0c0" stopOpacity={0.05} />
-                        </linearGradient>
-                      </defs>
-                    </AreaChart>
-                  </ResponsiveContainer>
+              <CardContent className="p-0">
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[800px]">
+                    <thead className="bg-gray-100 border-b">
+                      <tr>
+                        <th className="text-muted-foreground p-3 text-left text-xs font-medium md:p-4 md:text-sm">
+                          Quest ID
+                        </th>
+                        <th className="text-muted-foreground p-3 text-left text-xs font-medium md:p-4 md:text-sm">
+                          Name
+                        </th>
+                        <th className="text-muted-foreground p-3 text-left text-xs font-medium md:p-4 md:text-sm">
+                          Category
+                        </th>
+                        <th className="text-muted-foreground p-3 text-left text-xs font-medium md:p-4 md:text-sm">
+                          Status
+                        </th>
+                        <th className="text-muted-foreground p-3 text-left text-xs font-medium md:p-4 md:text-sm">
+                          XP Reward
+                        </th>
+                        <th className="text-muted-foreground p-3 text-left text-xs font-medium md:p-4 md:text-sm">
+                          Badge
+                        </th>
+                        <th className="text-muted-foreground p-3 text-left text-xs font-medium md:p-4 md:text-sm">
+                          Actions
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {quests.map((quest) => (
+                        <tr key={quest.id} className="hover:bg-gray-50 border-b">
+                          <td className="p-3 md:p-4">
+                            <span className="text-sm font-medium text-blue-600">{quest.id}</span>
+                          </td>
+                          <td className="p-3 text-sm md:p-4">{quest.name}</td>
+                          <td className="p-3 md:p-4">{getCategoryBadge(quest.category)}</td>
+                          <td className="p-3 md:p-4">{getQuestStatusBadge(quest.completed)}</td>
+                          <td className="text-muted-foreground p-3 text-sm md:p-4">{quest.xpReward}</td>
+                          <td className="text-muted-foreground p-3 text-sm md:p-4">{quest.badge}</td>
+                          <td className="p-3 md:p-4">
+                            <div className="flex items-center gap-1">
+                              <Button variant="ghost" size="sm">
+                                <Download className="h-4 w-4" />
+                              </Button>
+                              <Button variant="ghost" size="sm">
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-4 md:p-6">
-                <div className="mb-2 text-xs text-gray-500">Rank as of Today</div>
-                <div className="mb-4 text-xl font-bold text-gray-900 md:text-2xl">#{userLeaderboard.rank}</div>
-                <div className="space-y-3">
-                  <div>
-                    <div className="mb-1 text-xs text-green-600">Badges Earned</div>
-                    <div className="text-lg font-semibold">{userLeaderboard.badges?.length || 0}</div>
+                <div className="flex flex-col items-center justify-between gap-4 border-t p-4 sm:flex-row">
+                  <Button variant="ghost" className="flex items-center gap-2 text-sm">
+                    <ChevronLeft className="h-4 w-4" />
+                    Previous
+                  </Button>
+                  <div className="flex items-center gap-1 md:gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="bg-purple-600 text-white hover:bg-purple-700"
+                    >
+                      1
+                    </Button>
+                    <Button variant="ghost" size="sm">
+                      2
+                    </Button>
+                    <Button variant="ghost" size="sm">
+                      3
+                    </Button>
+                    <span className="hidden text-gray-400 sm:inline">...</span>
+                    <Button variant="ghost" size="sm" className="hidden sm:inline-flex">
+                      8
+                    </Button>
+                    <Button variant="ghost" size="sm" className="hidden sm:inline-flex">
+                      9
+                    </Button>
+                    <Button variant="ghost" size="sm">
+                      10
+                    </Button>
                   </div>
-                  <div>
-                    <div className="mb-1 text-xs text-blue-600">Groups Joined</div>
-                    <div className="text-lg font-semibold">{multiplayerGroups.length}</div>
-                  </div>
+                  <Button variant="ghost" className="flex items-center gap-2 text-sm">
+                    Next
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
                 </div>
               </CardContent>
             </Card>
           </div>
-          <Card>
-            <CardHeader className="pb-3">
-              <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-                <CardTitle className="flex items-center gap-2 text-base font-semibold md:text-lg">
-                  Active Quests
-                  <Info className="h-4 w-4 text-gray-400" />
-                </CardTitle>
-                <div className="flex items-center gap-2">
-                  <Sheet open={isNewQuestOpen} onOpenChange={setIsNewQuestOpen}>
-                    <SheetTrigger asChild>
-                      <Button className="bg-purple-600 text-sm hover:bg-purple-700">
-                        <Plus className="mr-2 h-4 w-4" />
-                        <span className="hidden sm:inline">New Quest</span>
-                        <span className="sm:hidden">New</span>
-                      </Button>
-                    </SheetTrigger>
-                    <SheetContent className="w-full max-w-3xl p-0 bg-white">
-                      <NewQuestFlow
-                        onClose={() => {
-                          setIsNewQuestOpen(false);
-                          setQuests(dataService.getQuests());
-                        }}
-                      />
-                    </SheetContent>
-                  </Sheet>
-                  <div className="h-5 w-5 text-gray-400" />
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="p-0">
-              <div className="overflow-x-auto">
-                <table className="w-full min-w-[800px]">
-                  <thead className="bg-gray-100 border-b">
-                    <tr>
-                      <th className="text-muted-foreground p-3 text-left text-xs font-medium md:p-4 md:text-sm">
-                        Quest ID
-                      </th>
-                      <th className="text-muted-foreground p-3 text-left text-xs font-medium md:p-4 md:text-sm">
-                        Name
-                      </th>
-                      <th className="text-muted-foreground p-3 text-left text-xs font-medium md:p-4 md:text-sm">
-                        Category
-                      </th>
-                      <th className="text-muted-foreground p-3 text-left text-xs font-medium md:p-4 md:text-sm">
-                        Status
-                      </th>
-                      <th className="text-muted-foreground p-3 text-left text-xs font-medium md:p-4 md:text-sm">
-                        XP Reward
-                      </th>
-                      <th className="text-muted-foreground p-3 text-left text-xs font-medium md:p-4 md:text-sm">
-                        Badge
-                      </th>
-                      <th className="text-muted-foreground p-3 text-left text-xs font-medium md:p-4 md:text-sm">
-                        Actions
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {quests.map((quest) => (
-                      <tr key={quest.id} className="hover:bg-gray-50 border-b">
-                        <td className="p-3 md:p-4">
-                          <span className="text-sm font-medium text-blue-600">{quest.id}</span>
-                        </td>
-                        <td className="p-3 text-sm md:p-4">{quest.name}</td>
-                        <td className="p-3 md:p-4">{getCategoryBadge(quest.category)}</td>
-                        <td className="p-3 md:p-4">{getQuestStatusBadge(quest.completed)}</td>
-                        <td className="text-muted-foreground p-3 text-sm md:p-4">{quest.xpReward}</td>
-                        <td className="text-muted-foreground p-3 text-sm md:p-4">{quest.badge}</td>
-                        <td className="p-3 md:p-4">
-                          <div className="flex items-center gap-1">
-                            <Button variant="ghost" size="sm">
-                              <Download className="h-4 w-4" />
-                            </Button>
-                            <Button variant="ghost" size="sm">
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              <div className="flex flex-col items-center justify-between gap-4 border-t p-4 sm:flex-row">
-                <Button variant="ghost" className="flex items-center gap-2 text-sm">
-                  <ChevronLeft className="h-4 w-4" />
-                  Previous
-                </Button>
-                <div className="flex items-center gap-1 md:gap-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="bg-purple-600 text-white hover:bg-purple-700"
-                  >
-                    1
-                  </Button>
-                  <Button variant="ghost" size="sm">
-                    2
-                  </Button>
-                  <Button variant="ghost" size="sm">
-                    3
-                  </Button>
-                  <span className="hidden text-gray-400 sm:inline">...</span>
-                  <Button variant="ghost" size="sm" className="hidden sm:inline-flex">
-                    8
-                  </Button>
-                  <Button variant="ghost" size="sm" className="hidden sm:inline-flex">
-                    9
-                  </Button>
-                  <Button variant="ghost" size="sm">
-                    10
-                  </Button>
-                </div>
-                <Button variant="ghost" className="flex items-center gap-2 text-sm">
-                  Next
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
         </main>
       </div>
     </div>
