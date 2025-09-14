@@ -1,3 +1,4 @@
+// src/services/dataService.ts
 import spotsData from '../data/spots.json';
 import budgetsData from '../data/budgets.json';
 import questsData from '../data/quests.json';
@@ -5,23 +6,25 @@ import leaderboardsData from '../data/leaderboards.json';
 import multiplayerData from '../data/multiplayer.json';
 import activitiesData from '../data/activities.json';
 import tasksData from '../data/tasks.json';
+import type { ReactNode } from 'react';
 
-// Types for JSON data
 export interface Spot {
   id: number;
   name: string;
-  category: string;
+  category: string[];
   description: string;
-  location: { lat: number; lng: number };
-  cost: { entry: number; transport: number; accommodation: number };
-  reviews: Array<{ user: string; rating: number; comment: string }>;
-  image: string;
+  location?: { lat: number; lng: number };
+  cost?: { entry: number; transport: number; accommodation: number };
+  reviews?: Array<{ user: string; rating: number; comment: string }>;
+  image?: string;
+  influencerEndorsed?: boolean;
+  endorsedBy?: string;
 }
 
 export interface Budget {
   id: number;
   userId: string;
-  date: string; // Added date field (e.g., "2025-09-01")
+  date: string;
   totalBudget: number;
   currentSpent: number;
   categories: { transport: number; accommodation: number; activities: number; food: number };
@@ -30,6 +33,7 @@ export interface Budget {
 }
 
 export interface Quest {
+  partnerReward: ReactNode;
   id: number;
   name: string;
   description: string;
@@ -59,7 +63,6 @@ export interface MultiplayerGroup {
   tales: Array<{ id: number; userId: string; content: string; upvotes: number; xpBonus: number }>;
 }
 
-// New interfaces for trip planning
 export interface Activity {
   name: string;
   estimatedCost: number;
@@ -75,55 +78,68 @@ export interface Trip {
   spots: TripSpot[];
 }
 
-// New interface for tasks (assumed structure, adjust based on tasks.json)
 export interface Task {
   id: string;
   title: string;
-  status: string;
-  label: string;
+  status: 'todo' | 'in progress' | 'done' | 'backlog' | 'canceled';
+  label: 'bug' | 'feature' | 'documentation';
   priority: 'low' | 'medium' | 'high';
-  // Add more fields based on tasks.json and taskSchema if needed
 }
 
-// Type for budgets.json structure
-interface BudgetsData {
-  sampleBudgets: Budget[];
-  costs: { discounts: number[]; currency: string };
-}
-
-// Type for leaderboards.json structure
 interface LeaderboardsData {
   global: LeaderboardEntry[];
   friends: LeaderboardEntry[];
 }
 
-// Type for activities.json structure
-interface ActivitiesData {
-  [spotId: number]: Activity[];
+interface BudgetsData {
+  sampleBudgets: Budget[];
+  costs: {
+    discounts: number[];
+    currency: string;
+  };
 }
 
-// Simulated in-memory storage for trips
+interface ActivitiesData {
+  [key: number]: Activity[];
+}
+
 let trips: Trip[] = [];
 
-// Services
 export const dataService = {
-  getSpots: (): Spot[] => spotsData as Spot[],
-  getBudgets: (userId: string, range?: string): Budget[] => {
-    const budgets = (budgetsData as BudgetsData).sampleBudgets.filter(b => b.userId === userId);
-    if (!range) return budgets;
-
-    const today = new Date('2025-09-13');
-    return budgets.filter(budget => {
-      const budgetDate = new Date(budget.date); // Use the date field from Budget
-      const diffInMs = today.getTime() - budgetDate.getTime();
-      const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+  getSpots: (): Spot[] => spotsData as unknown as Spot[],
+  getSpotById: (id: number): Spot | undefined => (spotsData as unknown as Spot[]).find(s => s.id === id),
+  getBudgets: (userId: string): Budget[] => {
+    const allBudgets = (budgetsData as BudgetsData).sampleBudgets;
+    return allBudgets.filter(budget => budget.userId === userId);
+  },
+  getBudgetById: (id: number): Budget | undefined => {
+    const allBudgets = (budgetsData as BudgetsData).sampleBudgets;
+    return allBudgets.find(budget => budget.id === id);
+  },
+  updateBudget: (budgetId: number, spent: number): void => {
+    const budget = (budgetsData as BudgetsData).sampleBudgets.find(b => b.id === budgetId);
+    if (budget) {
+      budget.currentSpent = spent;
+      const percentage = (spent / budget.totalBudget) * 100;
+      budget.resourceMeter = Math.round(percentage);
+      if (percentage > 80) {
+        budget.alerts.push("High spending alert!");
+      }
+      console.log(`Updated budget ${budgetId}: R${spent} spent`);
+    }
+  },
+  getBudgetsByDateRange: (userId: string, range: '1month' | '3months' | '6months' | '1year'): Budget[] => {
+    const allBudgets = (budgetsData as BudgetsData).sampleBudgets.filter(b => b.userId === userId);
+    const now = new Date();
+    return allBudgets.filter(budget => {
+      const diffInDays = (now.getTime() - new Date(budget.date).getTime()) / (1000 * 60 * 60 * 24);
       switch (range) {
-        case '30days':
+        case '1month':
           return diffInDays <= 30;
-        case '60days':
-          return diffInDays <= 60;
-        case '90days':
+        case '3months':
           return diffInDays <= 90;
+        case '6months':
+          return diffInDays <= 180;
         case '1year':
           return diffInDays <= 365;
         default:
@@ -156,12 +172,13 @@ export const dataService = {
       console.log(`Shared tale in group ${groupId}: ${content}`);
     }
   },
-  playMiniGame: (): number => Math.floor(Math.random() * 30) + 10, // Returns 10-40% discount
+  playMiniGame: (): number => Math.floor(Math.random() * 30) + 10,
   getActivities: (spotId: number): Activity[] => (activitiesData as ActivitiesData)[spotId] || [],
   saveTrip: (trip: Trip): void => {
     trips = [...trips, trip];
     console.log(`Saved trip: ${trip.name} with ${trip.spots.length} spots`);
   },
-  getTasks: (): Task[] => tasksData as Task[], // New method to get tasks
-  getAllBudgets: (): Budget[] => (budgetsData as BudgetsData).sampleBudgets
+  getTrips: (): Trip[] => trips,
+  getTasks: (): Task[] => tasksData as Task[],
+  getAllBudgets: (): Budget[] => (budgetsData as BudgetsData).sampleBudgets,
 };
