@@ -1,16 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Mail, Lock, Sparkles } from "lucide-react";
-
-// Brand color palette
-const colors = {
-  persianPink: '#f991cc',
-  pinkLavender: '#e2afde',
-  thistle: '#d3c2ce',
-  timberwolf: '#d3d2c7',
-  lemonChiffon: '#e2e1b9',
-};
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { User, Mail, Lock } from "lucide-react";
+import userData from '../../data/user.json';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -19,47 +13,26 @@ export default function Login() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    const user = { email, name: 'Demo User' };
-    localStorage.setItem('user', JSON.stringify(user));
-    navigate('/dashboard-k');
+    // Mock auth - in real app, use API
+    // Assuming you want to check against the first user in the users array
+    const user = userData.users[0];
+    // For demonstration, accept any password if email matches
+    if (user && email === user.email) {
+      localStorage.setItem('user', JSON.stringify(user));
+      navigate('/preferences');
+    } else {
+      alert('Invalid credentials');
+    }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="w-full max-w-md"
-      >
-        {/* Logo */}
-        <motion.div 
-          className="flex justify-center mb-5"
-          initial={{ scale: 0.9 }}
-          animate={{ scale: 1 }}
-          transition={{ type: "spring", stiffness: 200, damping: 12 }}
-        >
-          <div className="relative w-20 h-20 rounded-2xl flex items-center justify-center border"
-               style={{ borderColor: colors.thistle, backgroundColor: colors.timberwolf }}>
-            <img src="./assets/eco-car.png" alt="SafariQuest Logo" className="w-full h-full object-cover rounded-2xl" />
-            <motion.div
-              animate={{ scale: [1, 1.2, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-              className="absolute -top-2 -right-2"
-            >
-              <Sparkles size={16} fill={colors.persianPink} color={colors.persianPink} />
-            </motion.div>
-          </div>
-        </motion.div>
-
-        {/* Card */}
-        <div className="bg-white rounded-2xl p-6 shadow-lg border" style={{ borderColor: colors.thistle }}>
-          <h2 className="text-xl font-semibold text-center mb-4" style={{ color: colors.persianPink }}>
-            Welcome to SafariQuest
-          </h2>
-          
-          <form onSubmit={handleLogin} className="space-y-3">
-            {/* Email */}
+    <div className="flex items-center justify-center min-h-screen bg-background">
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle className="text-2xl text-center">Welcome Back</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleLogin} className="space-y-4">
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4" 
                     style={{ color: colors.persianPink }} />
