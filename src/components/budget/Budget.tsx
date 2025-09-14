@@ -10,6 +10,8 @@ import { useEffect, useState } from "react";
 import type { User } from "@/types";
 import { type Budget, type Quest, type Activity } from "@/services/dataService";
 import { SetBudgetFlow } from "@/components/budget/ResourceMeter";
+import { Sidebar, MobileSidebar } from "@/components/ui/Sidebar"; // Adjust import path as needed
+import { useLocation } from "react-router-dom";
 
 function getCategoryBadge(category: string) {
   switch (category) {
@@ -72,10 +74,17 @@ export default function Budget({ user }: BudgetProps) {
 
   const alerts = latestBudget.alerts || [];
 
+  const location = useLocation();
+
   return (
-    <div className="bg-white flex h-screen">
-      <div className="flex-1 flex flex-col">
-        <main className="flex-1 p-6">
+    <div className="flex h-screen bg-white">
+      <Sidebar currentPath={location.pathname} />
+      <div className="flex flex-1 flex-col">
+        <header className="border-b p-4 flex items-center justify-between">
+          <MobileSidebar />
+          <h1 className="text-xl font-semibold">Budget</h1>
+        </header>
+        <main className="flex-1 p-6 overflow-auto">
           <div className="w-full max-w-[--breakpoint-lg] mx-auto">
             <div className="mt-6 grid sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-3 gap-6">
               <Card className="col-span-1 md:col-span-2 lg:col-span-1">

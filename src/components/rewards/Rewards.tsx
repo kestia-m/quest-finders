@@ -7,6 +7,8 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Lege
 import { Info } from "lucide-react";
 import { dataService } from "@/services/dataService";
 import { type UserRewards } from "@/services/dataService";
+import { Sidebar, MobileSidebar } from "@/components/ui/Sidebar"; // Adjust import path as needed
+import { useLocation } from "react-router-dom";
 
 export default function Rewards({ userId }: { userId: string }) {
   const [rewards, setRewards] = useState<UserRewards>({
@@ -61,11 +63,17 @@ export default function Rewards({ userId }: { userId: string }) {
     rands: item.rands,
   }));
 
-  return (
-    <div className="bg-white flex h-screen">
-      <div className="flex flex-1 flex-col">
+  const location = useLocation();
 
-        <main className="flex-1 p-4 md:p-6">
+  return (
+    <div className="flex h-screen bg-white">
+      <Sidebar currentPath={location.pathname} />
+      <div className="flex flex-1 flex-col">
+        <header className="border-b p-4 flex items-center justify-between">
+          <MobileSidebar />
+          <h1 className="text-xl font-semibold">Rewards</h1>
+        </header>
+        <main className="flex-1 p-4 md:p-6 overflow-auto">
           <div className="mb-6 grid grid-cols-1 gap-4 md:mb-8 md:gap-6 xl:grid-cols-4">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-3 xl:col-span-3">
               <Card>
