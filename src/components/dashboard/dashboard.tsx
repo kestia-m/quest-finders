@@ -93,6 +93,7 @@ function NewQuestFlow({ onClose }: { onClose: () => void }) {
         requirements: [],
         multiplayer: false,
         cost: parseInt(formData.cost),
+        partnerReward: undefined
       };
       dataService.addQuest(newQuest);
       onClose();
